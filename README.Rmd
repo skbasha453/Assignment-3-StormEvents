@@ -1,0 +1,50 @@
+---
+title: "README"
+author: "Shaik"
+date: "2022-09-28"
+output: word_document
+---
+
+# Assignment 3: 1993 Storm Events Data Preparation and Visualization
+
+This project presents the data importation, preparation and visualization for the storm events data in the United States for the year 1993. The project also makes use of R base data state. 
+
+
+## Packages
+
+The following packages need to be installed and loaded prior to running the project codes. 
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(stringr)
+```
+
+## Contents
+
+The project contains 10 parts as follows:
+
+Part 1:  Reading data into R
+
+Part 2:  Selecting columns for the data analysis
+
+Part 3:  Arranging by beginning year and month
+
+Part 4:  Changing the State and County Names to title case
+
+Part 5:  Filtering for CZ Type C
+
+Part 6:  Padding the State and County FIPS with 0
+
+Part 7:  Setting column names to lower case
+
+Part 8:  Integrating state base R data
+
+Part 9:  Merging data sets
+
+Part 10: Visualization
+
+
+
+
+
+
