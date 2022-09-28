@@ -1,0 +1,137 @@
+---
+title: "Assignment 3"
+author: "Shaik"
+date: "2022-09-27"
+output: word_document
+---
+
+# Loading Packages
+
+```{r}
+library(tidyverse)
+library(stringr)
+
+```
+
+# Part 1
+
+```{r}
+#Reading the Data into R 
+StormEvents_1993 <- read_csv("StormEvents_details-ftp_v1.0_d1993_c20220425.csv.gz")
+
+```
+
+
+# Part 2
+
+```{r}
+#Selecting columns for the data analysis
+StormEvents_1993 <- StormEvents_1993 %>% select(BEGIN_YEARMONTH, BEGIN_DAY, BEGIN_TIME, BEGIN_DATE_TIME,
+                                                END_YEARMONTH, END_DAY, END_TIME, END_DATE_TIME, 
+                                                EPISODE_ID, EVENT_ID, STATE, STATE_FIPS, CZ_NAME, CZ_TYPE, 
+                                                CZ_FIPS, EVENT_TYPE, SOURCE, BEGIN_LAT, BEGIN_LON, END_LAT,
+                                                END_LON)
+```
+
+
+# Part 3 
+
+```{r}
+#Arranging by beginning year and month 
+StormEvents_1993 <- StormEvents_1993 %>% arrange(BEGIN_YEARMONTH)
+
+```
+
+
+# Part 4
+
+```{r}
+#Changing the State and County Names to title case
+StormEvents_1993$STATE <- str_to_title(StormEvents_1993$STATE)
+StormEvents_1993$CZ_NAME <- str_to_title(StormEvents_1993$CZ_NAME)
+```
+
+
+# Part 5
+
+```{r}
+#Filtering for CZ Type C
+StormEvents_1993 <- StormEvents_1993 %>% filter(CZ_TYPE == "C")
+#Removing CZ Type column
+StormEvents_1993 <- StormEvents_1993 %>% select(-CZ_TYPE)
+```
+
+
+# Part 6
+
+```{r}
+
+#Padding the State and County FIPS with 0
+StormEvents_1993$STATE_FIPS <- str_pad(StormEvents_1993$STATE_FIPS, width = 3, side = "left", pad = "0")
+StormEvents_1993$CZ_FIPS <- str_pad(StormEvents_1993$CZ_FIPS, width = 4, side = "left", pad = "0")
+#Uniting the two columns to form the fips column
+StormEvents_1993 <- unite(StormEvents_1993, col = "fips", c("STATE_FIPS", "CZ_FIPS"), sep = "", remove = F)
+```
+
+
+#Part 7
+
+```{r}
+#Setting column names to lower case
+StormEvents_1993 <- rename_all(StormEvents_1993, tolower)
+```
+
+
+# Part 8
+
+```{r}
+#Calling the state data
+data("state")
+#Creating data frame with state name, area and region
+state.dataframe <- data.frame(state = state.name,
+                              state.area = state.area, 
+                              state.region = state.region)
+```
+
+
+# Part 9
+
+
+```{r}
+#Grouping and Summarizing for state and number of events
+events.per.state <- StormEvents_1993 %>% 
+  group_by(state) %>% 
+  summarise(events.no = n())
+#Checking which state in event per state is not in state data frame
+which(events.per.state$state %in% state.dataframe$state)
+#Excluding rows 9 and 39 in events per state, not present in state data information
+events.per.state <- events.per.state[c(which(events.per.state$state %in% state.dataframe$state)),]
+#Merging with state.data frame data set
+state.storm.dataframe <- merge(x = state.dataframe, y = events.per.state, 
+                               by.x = "state", by.y = "state")
+```
+
+
+# Part 10
+
+```{r}
+#Plotting state area and number of events, grouped by region
+ggplot(state.storm.dataframe) +
+  aes(x = state.area, y = events.no, colour = state.region) +
+  geom_point(shape = "circle", size = 1.5) +
+  scale_color_hue(direction = 1) +
+  labs(
+    x = "Land area (square miles)",
+    y = "# of strom events in 1993",
+    color = "region"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
